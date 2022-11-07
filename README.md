@@ -17,6 +17,8 @@
 ## To Do
 
 - Add websockets support using [Niek/obs-web](https://github.com/Niek/obs-web)
+- GPU passthrough for NVENC,AMD and Intel QSV.
+- Wrap it up in a nice lil' package
 
 
 ## Build
