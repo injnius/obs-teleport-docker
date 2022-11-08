@@ -4,12 +4,21 @@ ARG DEBIAN_FRONTEND="noninteractive"
 EXPOSE 5900
 # for the browser VNC client
 EXPOSE 5901
-# Use environment variable to allow custom VNC passwords
+# for Obs-Web
+EXPOSE 80
+# Use environment variables
 ENV VNC_PASSWD=123456
+
+ENV OBS_FirstRun=false
+ENV OBS_ServerEnabled=true
+ENV OBS_AuthRequired=true
+ENV OBS_ServerPassword=123456
+ENV OBS_ServerPort=4455
+ENV OBS_AlertsEnabled=true
 # Make sure the dependencies are met
 
 RUN apt-get update \
-	&& apt install -y tigervnc-standalone-server fluxbox xterm git net-tools python python-numpy scrot wget software-properties-common vlc avahi-daemon unzip \
+	&& apt install -y tigervnc-standalone-server fluxbox nginx xterm git net-tools python python-numpy scrot wget software-properties-common vlc avahi-daemon unzip \
 	&& sed -i 's/geteuid/getppid/' /usr/bin/vlc \
 	&& add-apt-repository ppa:obsproject/obs-studio
 
@@ -31,6 +40,10 @@ RUN apt-get update \
 # Download and install the plugins for NDI
     && wget -q -O /tmp/obs-teleport.zip https://github.com/fzwoch/obs-teleport/releases/download/0.6.1/obs-teleport.zip \
 	&& unzip -qo /tmp/obs-teleport.zip -d /tmp/obs-teleport \
+    && wget -q -O /tmp/gh-pages.zip https://github.com/Niek/obs-web/archive/gh-pages.zip \
+    && unzip -qo /tmp/gh-pages.zip -d /tmp/gh-pages \
+    && rm -rf /var/www/* \
+    && cp -r /tmp/gh-pages/obs-web-gh-pages/* /var/www/ \
     && mkdir -p /root/.config/obs-studio/plugins/obs-teleport/bin/64bit \
     && cp /tmp/obs-teleport/linux-x86_64/obs-teleport.so /root/.config/obs-studio/plugins/obs-teleport/bin/64bit/obs-teleport.so \
 	&& rm -rf /tmp/obs-teleport \

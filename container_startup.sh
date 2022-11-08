@@ -1,6 +1,29 @@
 #!/bin/bash
 OUR_IP=$(hostname -i)
 
+# set the global.ini config file for OBS
+#Backup global.ini
+cp global.ini global.ini.bak
+#Set First Run to False
+sed --regexp-extended "s/(FirstRun=)\w+/FirstRun=$OBS_FirstRun/gm" global.ini > global.ini.new
+mv global.ini.new global.ini
+# Disable WebSockets server
+sed --regexp-extended "s/(ServerEnabled=)\w+/ServerEnabled=$OBS_ServerEnabled/gm" global.ini > global.ini.new
+mv global.ini.new global.ini
+## Set Auth
+sed --regexp-extended "s/(AuthRequired=)\w+/AuthRequired=$OBS_AuthRequired/gm" global.ini > global.ini.new
+mv global.ini.new global.ini
+## Set Server Password
+sed --regexp-extended "s/(ServerPassword=)\w+/ServerPassword=$OBS_ServerPassword/gm" global.ini > global.ini.new
+mv global.ini.new global.ini
+## Set Server Port
+sed --regexp-extended "s/(ServerPort=)\w+/ServerPort=$OBS_ServerPort/gm" global.ini > global.ini.new
+mv global.ini.new global.ini
+## Enable/Disable Alerts
+sed --regexp-extended "s/(AlertsEnabled=)\w+/AlertsEnabled=$OBS_AlertsEnabled/gm" global.ini > global.ini.new
+mv global.ini.new global.ini
+
+
 # start VNC server (Uses VNC_PASSWD Docker ENV variable)
 mkdir -p $HOME/.vnc && echo "$VNC_PASSWD" | vncpasswd -f > $HOME/.vnc/passwd
 vncserver :0 -localhost no -nolisten -rfbauth $HOME/.vnc/passwd -xstartup /opt/x11vnc_entrypoint.sh
